@@ -1,19 +1,18 @@
 package com.diplomadoUNAL.geosalesman.test;
 
-import android.content.Intent;
-import android.content.SharedPreferences.Editor;
-import android.test.ActivityUnitTestCase;
+import android.provider.SyncStateContract.Helpers;
+import android.test.ActivityInstrumentationTestCase2;
 import android.test.RenamingDelegatingContext;
-import android.test.suitebuilder.annotation.MediumTest;
-import android.test.suitebuilder.annotation.SmallTest;
 import android.widget.Button;
 import android.widget.EditText;
 
 import com.diplomadoUNAL.geosalesman.AddNewQuestion;
 import com.diplomadoUNAL.geosalesman.R;
 import com.diplomadoUNAL.geosalesman.database.SchemaHelper;
+import com.jayway.android.robotium.solo.Solo;
 
-public class AddNewQuestionTests extends ActivityUnitTestCase<AddNewQuestion> {
+public class AddNewQuestionTests extends
+				ActivityInstrumentationTestCase2<AddNewQuestion> {
 
 	public AddNewQuestionTests(Class<AddNewQuestion> name) {
 		super(name);
@@ -23,6 +22,8 @@ public class AddNewQuestionTests extends ActivityUnitTestCase<AddNewQuestion> {
 		super(AddNewQuestion.class);
 	}
 
+	private Solo solo;
+
 	EditText editTextQuestionTitle, editTextQuestionDescription,
 					editTextQuestion, editTextMaximumValue,
 					editTextMinimumValue;
@@ -31,85 +32,87 @@ public class AddNewQuestionTests extends ActivityUnitTestCase<AddNewQuestion> {
 
 	protected void setUp() throws Exception {
 		super.setUp();
-
-		// Setup and start delegating Context
-		renamingDelegatingContext = new RenamingDelegatingContext(
-						getInstrumentation().getTargetContext(), "TEST.");
-
-		renamingDelegatingContext.makeExistingFilesAndDbsAccessible();
-
-		// Clear sharedPreferences
-		Editor sharedPreferencesEditor = renamingDelegatingContext
-						.getSharedPreferences(AddNewQuestion.PREFS_NAME, 0)
-						.edit();
-		sharedPreferencesEditor.clear();
-		sharedPreferencesEditor.commit();
-
-		// Clear database
-		SchemaHelper schemaHelper = new SchemaHelper(renamingDelegatingContext);
-		schemaHelper.onUpgrade(schemaHelper.getWritableDatabase(), 1, 1);
-
+		solo = new Solo(getInstrumentation(), getActivity());		
 	}
 
 	protected void tearDown() throws Exception {
+		solo.finishOpenedActivities();
 		super.tearDown();
 	}
 
 	public AddNewQuestion setActivityTestContext() {
 
-		setActivityContext(renamingDelegatingContext);
-		startActivity(new Intent(), null, null);
 		final AddNewQuestion addNewQuestionActivity = getActivity();
 
 		// Prepare Activity objects
 		editTextQuestionTitle = (EditText) addNewQuestionActivity
-						.findViewById(R.id.editText_question_title);
+						.findViewById(R.id.activity_add_new_question_editText_question_title);
 
 		editTextQuestionDescription = (EditText) addNewQuestionActivity
-						.findViewById(R.id.editText_question_description);
+						.findViewById(R.id.activity_add_new_question_editText_question_description);
 
 		editTextQuestion = (EditText) addNewQuestionActivity
-						.findViewById(R.id.editText_question);
+						.findViewById(R.id.activity_add_new_question_editText_question);
 
-		/*
-		 * Cannot be tested because they are in a dialog editTextMaximumValue = (EditText) addNewQuestionActivity
-		 * .findViewById(R.id.editText_maximum_value);
-		 * 
-		 * editTextMinimumValue = (EditText) addNewQuestionActivity .findViewById(R.id.editText_minimum_value);
-		 */
+		editTextMaximumValue = (EditText) addNewQuestionActivity
+						.findViewById(R.id.activity_add_new_question_editText_maximum_value);
+
+		editTextMinimumValue = (EditText) addNewQuestionActivity
+						.findViewById(R.id.activity_add_new_question_editText_minimum_value);
+
 		okButton = (Button) addNewQuestionActivity
-						.findViewById(R.id.button_add_new_question_ok);
+						.findViewById(R.id.activity_add_new_question_button_add_new_question_ok);
 
 		cancelButton = (Button) addNewQuestionActivity
-						.findViewById(R.id.button_add_new_question_cancel);
+						.findViewById(R.id.activity_add_new_question_button_add_new_question_cancel);
 		return addNewQuestionActivity;
 	}
 
-	@SmallTest
-	public void testViewsCreated() {
-		AddNewQuestion addNewQuestionActivity = setActivityTestContext();
+	public void testHappyPathAddScaleQuestion() {
+		//Some weird chars
+		String chars = "";
+		
+		// Type question title
+		solo.clickOnEditText(0);
+		solo.enterText((EditText) getActivity().findViewById(
+						R.id.activity_add_new_question_editText_question_title),
+						"Question title scale "+chars);
+		// Type question description
+		solo.clickOnEditText(1);
+		solo.enterText((EditText) getActivity().findViewById(
+						R.id.activity_add_new_question_editText_question_description),
+						"Question description scale"+chars);
+		// Type the question
+		solo.clickOnEditText(2);
+		solo.enterText((EditText) getActivity().findViewById(
+						R.id.activity_add_new_question_editText_question),
+						"Question scale"+chars);
 
-		assertNotNull(addNewQuestionActivity);
-		assertNotNull(editTextQuestionTitle);
-		assertNotNull(editTextQuestionDescription);
-		assertNotNull(editTextMaximumValue);
-		assertNotNull(editTextMinimumValue);
-		assertNotNull(okButton);
-		assertNotNull(cancelButton);
+		// Click the spinner and then the "Scale" question type
+		solo.pressSpinnerItem(0, 4);
 
+		solo.waitForText(getActivity().getResources().getString(R.string.activity_add_new_question_scale_selection_dialog_message));
+		// Type minimum and maximum ranges
+		solo.clickOnEditText(0);
+		solo.searchText(getActivity().getResources().getString(R.string.activity_add_new_question_maximum_value_hint));
+		solo.clickOnView(solo.getCurrentEditTexts().get(0));
+		solo.enterText(0, "34");
+		solo.clickOnView(solo.getCurrentEditTexts().get(0));
+		solo.enterText(1, "55");
+	
+		// Click ok to close the dialog
+		solo.clickOnButton(getActivity().getResources().getString(R.string.OK));
+		
+		// Click ok to get an ok message
+		solo.clickOnButton(getActivity().getResources().getString(R.string.OK));
+		//Wait for the ok toast message
+		boolean flagOKDatabase=solo.waitForText(getActivity().getResources().getString(R.string.database_success_storing_data),1,120);
+		assertEquals("Something wrong happened with the database", true, flagOKDatabase);
 	}
-
-	public final void testFieldsShouldStartEmpty() {
-		setActivityTestContext();
-		assertEquals("", editTextQuestionTitle.getText().toString());
-		assertEquals("", editTextQuestionDescription.getText().toString());
-		assertEquals("", editTextMaximumValue.getText().toString());
-		assertEquals("", editTextMinimumValue.getText().toString());
-	}
-
+/*
 	@MediumTest
 	public void testOnCreateBundle() {
 		AddNewQuestionTests.fail("Not yet implemented"); // TODO
-	}
+	}*/
 
 }
