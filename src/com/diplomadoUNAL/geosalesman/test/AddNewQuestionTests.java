@@ -1,6 +1,5 @@
 package com.diplomadoUNAL.geosalesman.test;
 
-import android.provider.SyncStateContract.Helpers;
 import android.test.ActivityInstrumentationTestCase2;
 import android.test.RenamingDelegatingContext;
 import android.widget.Button;
@@ -8,7 +7,6 @@ import android.widget.EditText;
 
 import com.diplomadoUNAL.geosalesman.AddNewQuestion;
 import com.diplomadoUNAL.geosalesman.R;
-import com.diplomadoUNAL.geosalesman.database.SchemaHelper;
 import com.jayway.android.robotium.solo.Solo;
 
 public class AddNewQuestionTests extends
@@ -76,17 +74,17 @@ public class AddNewQuestionTests extends
 		solo.clickOnEditText(0);
 		solo.enterText((EditText) getActivity().findViewById(
 						R.id.activity_add_new_question_editText_question_title),
-						"Question title scale "+chars);
+						"Question title scale ");
 		// Type question description
 		solo.clickOnEditText(1);
 		solo.enterText((EditText) getActivity().findViewById(
 						R.id.activity_add_new_question_editText_question_description),
-						"Question description scale"+chars);
+						"Question description scale");
 		// Type the question
 		solo.clickOnEditText(2);
 		solo.enterText((EditText) getActivity().findViewById(
 						R.id.activity_add_new_question_editText_question),
-						"Question scale"+chars);
+						"Question scale");
 
 		// Click the spinner and then the "Scale" question type
 		solo.pressSpinnerItem(0, 4);
@@ -105,14 +103,10 @@ public class AddNewQuestionTests extends
 		
 		// Click ok to get an ok message
 		solo.clickOnButton(getActivity().getResources().getString(R.string.OK));
+		
 		//Wait for the ok toast message
 		boolean flagOKDatabase=solo.waitForText(getActivity().getResources().getString(R.string.database_success_storing_data),1,120);
 		assertEquals("Something wrong happened with the database", true, flagOKDatabase);
 	}
-/*
-	@MediumTest
-	public void testOnCreateBundle() {
-		AddNewQuestionTests.fail("Not yet implemented"); // TODO
-	}*/
 
 }
