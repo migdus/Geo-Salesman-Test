@@ -22,12 +22,6 @@ public class AddNewQuestionTests extends
 
 	private Solo solo;
 
-	EditText editTextQuestionTitle, editTextQuestionDescription,
-					editTextQuestion, editTextMaximumValue,
-					editTextMinimumValue;
-	Button okButton, cancelButton;
-	RenamingDelegatingContext renamingDelegatingContext;
-
 	protected void setUp() throws Exception {
 		super.setUp();
 		solo = new Solo(getInstrumentation(), getActivity());		
@@ -38,37 +32,8 @@ public class AddNewQuestionTests extends
 		super.tearDown();
 	}
 
-	public AddNewQuestion setActivityTestContext() {
-
-		final AddNewQuestion addNewQuestionActivity = getActivity();
-
-		// Prepare Activity objects
-		editTextQuestionTitle = (EditText) addNewQuestionActivity
-						.findViewById(R.id.activity_add_new_question_editText_question_title);
-
-		editTextQuestionDescription = (EditText) addNewQuestionActivity
-						.findViewById(R.id.activity_add_new_question_editText_question_description);
-
-		editTextQuestion = (EditText) addNewQuestionActivity
-						.findViewById(R.id.activity_add_new_question_editText_question);
-
-		editTextMaximumValue = (EditText) addNewQuestionActivity
-						.findViewById(R.id.activity_add_new_question_editText_maximum_value);
-
-		editTextMinimumValue = (EditText) addNewQuestionActivity
-						.findViewById(R.id.activity_add_new_question_editText_minimum_value);
-
-		okButton = (Button) addNewQuestionActivity
-						.findViewById(R.id.activity_add_new_question_button_add_new_question_ok);
-
-		cancelButton = (Button) addNewQuestionActivity
-						.findViewById(R.id.activity_add_new_question_button_add_new_question_cancel);
-		return addNewQuestionActivity;
-	}
 
 	public void testHappyPathAddScaleQuestion() {
-		//Some weird chars
-		String chars = "";
 		
 		// Type question title
 		solo.clickOnEditText(0);
