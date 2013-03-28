@@ -26,9 +26,9 @@ public class EditTextValidationTest extends TestCase {
 	public void testAlphabeticValidation() {
 		
 		HashMap<String,Boolean> toValidate = new HashMap<String, Boolean>();
-		toValidate.put("asl–a kjfad fiojo‡e  adfadf EEasfadf",true);
-		toValidate.put("adfkj–lj–klj–kfdadfadf", true);
-		toValidate.put("asl–a1! kjfad fiojo‡e @ adfadf EEasfadf", false);
+		toValidate.put("asl–a kjfad fiojo‡e  adfadf ÀEEasfadf",true);
+		toValidate.put("adfkj–lj–k?lj–kfdadfadf", true);
+		toValidate.put("asl–a1! kjfad fiojo‡Àe @ adfadf EEasfadf", false);
 		toValidate.put("1–klj–kfdadfadf", false);
 		
 		String errorMessage = "alphabetic validation error";

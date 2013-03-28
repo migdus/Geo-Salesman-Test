@@ -20,12 +20,14 @@ public class SchemaHelperTest extends AndroidTestCase {
 
 	protected void setUp() throws Exception {
 		super.setUp();
+		//Clears and creates a fresh database
 		schemaHelper = new SchemaHelper(getContext());
 		schemaHelper.onUpgrade(schemaHelper.getWritableDatabase(), 1, 1);
 	}
 
 	protected void tearDown() throws Exception {
 		super.tearDown();
+		//Clears and creates a fresh database
 		schemaHelper = new SchemaHelper(getContext());
 		schemaHelper.onUpgrade(schemaHelper.getWritableDatabase(), 1, 1);
 	}
@@ -172,7 +174,83 @@ public class SchemaHelperTest extends AndroidTestCase {
 		}
 
 	}
+public void onDeleteQuestion(){
 
+	ArrayList<Integer> resultId=new ArrayList<Integer>();
+	
+	ArrayList<HashMap<String, String>> elements = new ArrayList<HashMap<String, String>>();
+	HashMap<String, String> temp = new HashMap<String, String>();
+
+	temp.put("questionTitle", "Número de empleados");
+	temp.put("question", "¿Cuántos empleados tiene la compañía?");
+	temp.put("questionDescription",
+					"Determinar el número de empleados de la compañía.");
+	temp.put("questionType", "Open");
+	temp.put("answerOptions", "");
+	temp.put("isThisExampleOK", Boolean.TRUE.toString());
+	elements.add(temp);
+
+	temp = new HashMap<String, String>();
+	temp.put("questionTitle", "Opiniones del servicio");
+	temp.put("question", "¿Qué opina sobre nuestro servicio?");
+	temp.put("questionDescription",
+					"Describir la opinión del servicio al cliente.");
+	temp.put("questionType", "Open");
+	temp.put("answerOptions", "");
+	temp.put("isThisExampleOK", Boolean.TRUE.toString());
+	elements.add(temp);
+
+	temp = new HashMap<String, String>();
+	temp.put("questionTitle", "Apreciación del servicio");
+	temp.put("question", "¿Le gustó el servicio?");
+	temp.put("questionDescription", "Esta es una descripción más");
+	temp.put("questionType", "Yes/No");
+	temp.put("answerOptions", "Yes | No");
+	temp.put("isThisExampleOK", Boolean.TRUE.toString());
+	elements.add(temp);
+
+	temp = new HashMap<String, String>();
+
+	for (int i = 0; i < elements.size(); i++) {
+		temp = elements.get(i);
+
+		if (!temp.containsKey("isThisExampleOK"))
+			fail("The key: \"isThisExampleOK\" was not found when inserting the following values:"
+							+ temp.get("clientName")
+							+ temp.get("phoneNumber")
+							+ temp.get("address")
+							+ temp.get("contactName") + " to the database");
+		int result = -1;
+
+		result = (int) schemaHelper
+						.addQuestion(temp.get("questionTitle"),
+										temp.get("question"),
+										temp.get("questionDescription"),
+										temp.get("questionType"),
+										temp.get("answerOptions"));
+
+		String message = "Error when inserting: "
+						+ temp.get("questionTitle") + temp.get("question")
+						+ temp.get("questionDescription")
+						+ temp.get("questionType")
+						+ temp.get("answerOptions") + " to the database";
+
+		boolean flagSomeInserted = result > -1 ? true : false;
+
+		if (Boolean.parseBoolean(temp.get("isThisExampleOK")))
+			assertTrue(message, flagSomeInserted);
+		else if (!Boolean.parseBoolean(temp.get("isThisExampleOK")))
+			assertFalse(message, flagSomeInserted);
+		resultId.add(result);
+	}
+	
+	for (int i = 0; i < resultId.size(); i++) {
+		int id=resultId.get(i);
+		int deleteResult=schemaHelper.deleteQuestion(Integer.toString(id));	
+		assertTrue(deleteResult!=3);//Test if the question does not have Report Template dependencies
+	}
+
+}
 	public void testGetQuestion() {
 		fail("Not yet implemented"); // TODO
 	}
